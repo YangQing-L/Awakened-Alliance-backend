@@ -116,16 +116,14 @@ class MultiPlayer(AsyncWebsocketConsumer):
         )
 
 
-    async def shoot_fireball(self, data):
+    async def use_general_skill(self, data):
         await self.channel_layer.group_send(
             self.room_name,
             {
                 'type': "group_send_event",
-                'event': "shoot_fireball",
+                'event': "use_general_skill",
                 'uuid': data['uuid'],
-                'ball_uuid': data['ball_uuid'],
-                'tx': data['tx'],
-                'ty': data['ty'],
+                'skill_data': data['skill_data'],
             }
         )
 
@@ -221,8 +219,8 @@ class MultiPlayer(AsyncWebsocketConsumer):
             await self.create_player(data)
         elif event == "move_toward":
             await self.move_toward(data)
-        elif event == "shoot_fireball":
-            await self.shoot_fireball(data)
+        elif event == "general_skill":
+            await self.use_general_skill(data)
         elif event == "attack":
             await self.attack(data)
         elif event == "blink": 
