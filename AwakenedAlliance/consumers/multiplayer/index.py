@@ -128,6 +128,18 @@ class MultiPlayer(AsyncWebsocketConsumer):
         )
 
 
+    async def use_awakened_skill(self, data):
+        await self.channel_layer.group_send(
+            self.room_name,
+            {
+                'type': "group_send_event",
+                'event': "use_awakened_skill",
+                'uuid': data['uuid'],
+                'skill_data': data['skill_data'],
+            }
+        )
+
+
     async def use_summoner_skill(self, data):
         await self.channel_layer.group_send(
             self.room_name,
@@ -220,6 +232,8 @@ class MultiPlayer(AsyncWebsocketConsumer):
             await self.move_toward(data)
         elif event == "general_skill":
             await self.use_general_skill(data)
+        elif event == "awakened_skill":
+            await self.use_awakened_skill(data)
         elif event == "summoner_skill":
             await self.use_summoner_skill(data)
         elif event == "attack":
