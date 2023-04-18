@@ -209,6 +209,18 @@ class MultiPlayer(AsyncWebsocketConsumer):
                 'text': data['text'],
             }
         )
+    
+
+    async def update_player_info(self, data):
+        await self.channel_layer.group_send(
+            self.room_name,
+            {
+                'type': "group_send_event",
+                'event': "update_player_info",
+                'uuid': data['uuid'],
+                'hero_name': data['hero_name'],
+            }
+        )
 
 
     # 向当前连接的前端发送消息，函数名与'type'关键字保持一致
@@ -240,3 +252,5 @@ class MultiPlayer(AsyncWebsocketConsumer):
             await self.attack(data)
         elif event == "message":
             await self.message(data)
+        elif event == "update_player_info":
+            await self.update_player_info(data)
