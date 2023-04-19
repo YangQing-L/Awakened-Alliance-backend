@@ -152,7 +152,7 @@ class MultiPlayer(AsyncWebsocketConsumer):
         )
 
 
-    async def attack(self, data):
+    async def calculate_hp(delf, data):
         if not self.room_name:
             return 
         players = cache.get(self.room_name)
@@ -181,12 +181,32 @@ class MultiPlayer(AsyncWebsocketConsumer):
                     await database_sync_to_async(db_update_player_rank_score)(player['username'], -5)
                 else:
                     await database_sync_to_async(db_update_player_rank_score)(player['username'], +10)
-        
+
+
+    async def attack(self, data):
+        self.calculate_hp(data)
         await self.channel_layer.group_send(
             self.room_name,
             {
                 'type': "group_send_event",
                 'event': "attack",
+                'uuid': data['uuid'],
+                'attackee_uuid': data['attackee_uuid'],
+                'x': data['x'],
+                'y': data['y'],
+                'angle': data['angle'],
+                'damage': data['damage'],
+            }
+        )
+
+
+    async def fireball_attack(self, data):
+        self.calculate_hp(data)
+        await self.channel_layer.group_send(
+            self.room_name,
+            {
+                'type': "group_send_event",
+                'event': "fireball_attack",
                 'uuid': data['uuid'],
                 'attackee_uuid': data['attackee_uuid'],
                 'x': data['x'],
@@ -250,6 +270,8 @@ class MultiPlayer(AsyncWebsocketConsumer):
             await self.use_summoner_skill(data)
         elif event == "attack":
             await self.attack(data)
+        elif event == "fireball_attack":
+            await self.fireball_attack(data)
         elif event == "message":
             await self.message(data)
         elif event == "update_player_info":
