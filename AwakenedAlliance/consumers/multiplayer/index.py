@@ -243,6 +243,19 @@ class MultiPlayer(AsyncWebsocketConsumer):
         )
 
 
+    async def player_change_state(self, data):
+        await self.channel_layer.group_send(
+            self.room_name,
+            {
+                'type': "group_send_event",
+                'event': "player_change_state",
+                'uuid': data['uuid'],
+                'attackee_uuid': data['attackee_uuid'],
+                'data': data['data'],
+            }
+        )
+
+
     # 向当前连接的前端发送消息，函数名与'type'关键字保持一致
     # 所有的事件都可以通过调用group_send_event()来实现
     async def group_send_event(self, data):
@@ -276,3 +289,5 @@ class MultiPlayer(AsyncWebsocketConsumer):
             await self.message(data)
         elif event == "update_player_info":
             await self.update_player_info(data)
+        elif event == "player_change_state":
+            await self.player_change_state(data)
