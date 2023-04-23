@@ -122,6 +122,7 @@ def worker():
 
 
 if __name__ == '__main__':
+    # Thrift服务的配置，为固定写法
     handler = MatchHandler()
     processor = Match.Processor(handler)
     transport = TSocket.TServerSocket(host='127.0.0.1', port=9090)
@@ -131,7 +132,7 @@ if __name__ == '__main__':
     server = TServer.TThreadedServer(
         processor, transport, tfactory, pfactory)
 
-    # 定义一个线程，工作函数为worker()，是守护线程（杀掉主线程，这个子线程也会跟着关闭），并启动
+    # 定义一个线程并启动，工作函数为worker()，是守护线程（杀掉主线程，这个子线程也会跟着关闭）
     Thread(target=worker, daemon=True).start()
 
     print('Starting the server...')
